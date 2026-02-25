@@ -52,7 +52,7 @@ Return ONLY the JSON array, no other text, no markdown.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        ''x-api-key': 'sk_ant_api03-hRFHtHOAZS_gzyNnoS03KDca2xCmQ81Q3zvZxqWjC9181BqQg1J60TZ1orjNfdukOO0XvOB0gWyuHcrqkOp5Q_25ItjQAA',,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
