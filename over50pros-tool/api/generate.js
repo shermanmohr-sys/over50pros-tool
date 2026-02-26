@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   const goalText = goalLabels[goal] || goalLabels['side-hustle'];
   const skillList = skills.join(', ');
   const prompt = "You are a career strategist helping experienced professionals aged 50+ turn their life and career skills into actionable side projects.\n\nSkills: " + skillList + "\nGoal: " + goalText + "\n\nGenerate exactly 12 side project ideas. Return a JSON array of exactly 12 objects each with: title, description, type, skillsUsed, timeToLaunch, earningPotential, firstStep. Return ONLY the JSON array.";
-  const k = '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';
+  const k = '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';
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
