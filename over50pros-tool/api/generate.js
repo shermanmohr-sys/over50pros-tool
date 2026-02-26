@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   const { skills = [], goal = 'side-hustle' } = req.body || {};
 
-  const k = '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';
+  const k = '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';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
