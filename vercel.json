@@ -4,7 +4,7 @@
     {
       "src": "api/generate.mjs",
       "use": "@vercel/node"
-    },
+    }
     
   ],
   "routes": [
