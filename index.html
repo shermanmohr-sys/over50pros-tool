@@ -315,14 +315,13 @@ var email = document.getElementById('emailInput').value.trim();
       } catch(e) {
         console.error("AI Data Error:", e);
         renderResults(fallback());
-      }
+}
     } else {
       renderResults(fallback());
     }
-  }
-};
-}
-
+  }; // This closes the onreadystatechange
+    xhr.send(JSON.stringify({ skills: skills, goal: goal }));
+} // This closing bracket must be BELOW the xhr.send line
 function renderResults(ideas) {
   var FREE_COUNT = 3;
   var container = document.getElementById('ideasContainer');
