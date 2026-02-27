@@ -155,7 +155,12 @@ body{font-family:'Source Sans Pro',sans-serif;background:var(--gray);color:var(-
   <p>Enter the skills you have built over your career. Get 12 tailored project ideas that showcase your experience and solve problems people will pay for.</p>
   <div class="tagline">"Where Experience Meets Opportunity"</div>
 </div>
-
+<div class="step-label">Step 0 — Get Your Report</div>
+    <h2 style="margin-bottom:6px">Where should we send your ideas?</h2>
+    <p class="subtitle">Enter your email to receive your personalized 12-idea report.</p>
+    <div class="input-row" style="margin-bottom:30px;">
+      <input type="email" id="emailInput" placeholder="yourname@email.com" required style="width: 100%;">
+    </div>
 <div class="container">
   <div class="card" id="inputCard">
     <div class="card-accent"></div>
@@ -276,6 +281,8 @@ function selectGoal(el) {
 }
 
 function generate() {
+var email = document.getElementById('emailInput').value.trim();
+  if (!email) { alert('Please enter your email to receive results.'); return; }
   if (skills.length === 0) { alert('Please add at least one skill to continue.'); return; }
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('inputCard').style.display = 'none';
