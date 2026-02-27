@@ -1,59 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Side Project Idea Generator | Over50Pros</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ... (All your CSS styles from earlier) ... */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--blue:#005A8D;--blue-dark:#004570;--blue-light:#0072b1;--green:#6EBE44;--green-dark:#58a234;--gray:#F4F4F4;--slate:#1E1E1E;--sky:#B3DDEE;--sky-light:#daeef7;--mid:#5a6a75;--border:#d0dde5;--white:#ffffff;--shadow:0 4px 24px rgba(0,90,141,0.10);}
+body{font-family:'Source Sans Pro',sans-serif;background:var(--gray);color:var(--slate);min-height:100vh;}
+.hero{background:var(--blue);padding:56px 24px 48px;text-align:center;position:relative;overflow:hidden;}.hero h1{font-size:clamp(1.9rem,5vw,3.2rem);font-weight:900;color:#fff;line-height:1.15;margin-bottom:16px;}
+.container{max-width:840px;margin:0 auto;padding:0 20px 60px;}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:38px;margin-top:-30px;box-shadow:var(--shadow);}
+.input-row{display:flex;gap:10px;margin-bottom:14px;}
+.input-row input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:13px 16px;}.btn-add{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:13px 22px;font-weight:700;cursor:pointer;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}.pill{background:var(--sky-light);border:1px solid var(--sky);border-radius:100px;padding:6px 14px;font-size:0.875rem;font-weight:600;color:var(--blue-dark);}
+.btn-generate{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:18px;font-size:1.1rem;font-weight:700;cursor:pointer;}
+.loading{display:none;text-align:center;padding:60px 24px;}.loading.active{display:block;}
+.results{display:none;}.results.active{display:block;}
+.idea-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:12px;padding:26px 28px;margin-bottom:14px;}
+.skill-tag{background:var(--blue);color:#fff;font-size:0.78rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-right:5px;}
+</style>
+</head>
+<body>
+<div class="hero"><h1>Turn Your Life Skills Into<br><em>Real Side Projects</em></h1></div>
+<div class="container">
+  <div class="card" id="inputCard">
+    <h2>Where should we send your results?</h2>
+    <div class="input-row"><input type="email" id="emailInput" placeholder="yourname@email.com" required></div>
+    <h2>What skills do you have?</h2>
+    <div class="input-row"><input type="text" id="skillInput" placeholder="e.g. Project Management"><button class="btn-add" onclick="addSkill()">+ Add</button></div>
+    <div class="pills" id="pills"></div>
+    <button class="btn-generate" id="generateBtn" onclick="generate()">✦ Generate My 12 Ideas</button>
+  </div>
+  <div class="loading" id="loading"><h3>Crafting your ideas...</h3></div>
+  <div class="results" id="results">
+    <h2>Your <span id="ideasCount">0</span> Ideas</h2>
+    <div id="ideasContainer"></div>
+    <button onclick="reset()">↺ Start Over</button>
+  </div>
+</div>
+
 <script>
 var skills = [];
-var goal = 'side-hustle';
-
-document.getElementById('skillInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') addSkill();
-});
-
 function addSkill() {
   var input = document.getElementById('skillInput');
   var val = input.value.trim();
-  if (!val || skills.indexOf(val) !== -1 || skills.length >= 10) return;
+  if (!val) return;
   skills.push(val);
   input.value = '';
   renderPills();
 }
-
-function addSug(el) {
-  var val = el.textContent.trim();
-  if (skills.indexOf(val) === -1 && skills.length < 10) {
-    skills.push(val);
-    renderPills();
-  }
-}
-
-function removeSkill(s) {
-  var i = skills.indexOf(s);
-  if (i > -1) skills.splice(i, 1);
-  renderPills();
-}
-
 function renderPills() {
-  var c = document.getElementById('pills');
-  var html = '';
-  for (var i = 0; i < skills.length; i++) {
-    html += '<div class="pill">' + skills[i] + '<button onclick="removeSkill(\'' + skills[i].replace(/'/g,"\\'") + '\')">x</button></div>';
-  }
-  c.innerHTML = html;
+  document.getElementById('pills').innerHTML = skills.map(s => `<div class="pill">${s}</div>`).join('');
 }
-
-function selectGoal(el) {
-  var opts = document.querySelectorAll('.goal-opt');
-  for (var i = 0; i < opts.length; i++) opts[i].classList.remove('selected');
-  el.classList.add('selected');
-  goal = el.getAttribute('data-goal');
-}
-
 function generate() {
   var email = document.getElementById('emailInput').value.trim();
-  if (!email) { alert('Please enter your email to receive results.'); return; }
-  if (skills.length === 0) { alert('Please add at least one skill to continue.'); return; }
-  
-  document.getElementById('generateBtn').disabled = true;
+  if (!email || skills.length === 0) { alert('Please enter email and skills.'); return; }
   document.getElementById('inputCard').style.display = 'none';
   document.getElementById('loading').classList.add('active');
-
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/api/generate', true);
   xhr.setRequestHeader('Content-Type', 'application/json');
@@ -61,69 +67,30 @@ function generate() {
     if (xhr.readyState === 4) {
       document.getElementById('loading').classList.remove('active');
       if (xhr.status === 200) {
-        try {
-          var responseData = JSON.parse(xhr.responseText);
-          var aiText = responseData.candidates[0].content.parts[0].text;
-          var cleanIdeas = JSON.parse(aiText); 
-          renderResults(cleanIdeas);
-        } catch(e) {
-          console.error("AI Data Mapping Error:", e);
-          renderResults(fallback());
-        }
-      } else {
-        renderResults(fallback());
+        var data = JSON.parse(xhr.responseText);
+        var aiText = data.candidates[0].content.parts[0].text;
+        renderResults(JSON.parse(aiText));
       }
     }
   };
-  xhr.send(JSON.stringify({ email: email, skills: skills, goal: goal }));
+  xhr.send(JSON.stringify({ email: email, skills: skills }));
 }
-
-function fallback() {
-  return [
-    { title: 'Expert Consulting Service', description: 'Leverage your career skills to provide high-value advice.', type: 'Consulting', skillsUsed: skills.slice(0,2), timeToLaunch: '2 weeks', earningPotential: '$100+/hr', firstStep: 'Define your primary offer.' },
-    { title: 'Specialized Training Program', description: 'Teach others what you have spent decades mastering.', type: 'Education', skillsUsed: skills.slice(0,1), timeToLaunch: '4 weeks', earningPotential: '$500+/student', firstStep: 'Draft a simple syllabus.' },
-    { title: 'Boutique Service Agency', description: 'Manage a team or use your skills to solve specific niche problems.', type: 'Business', skillsUsed: skills.slice(0,2), timeToLaunch: '1 month', earningPotential: '$5k+/mo', firstStep: 'Identify your first 3 target clients.' }
-  ];
-}
-
 function renderResults(ideas) {
-  var FREE_COUNT = 3;
   var container = document.getElementById('ideasContainer');
   document.getElementById('ideasCount').textContent = ideas.length;
-  var html = '<div class="free-banner"><p><strong>Your first 3 ideas are free.</strong> Upgrade to unlock all ' + ideas.length + ' ideas.</p></div>';
-
-  for (var i = 0; i < FREE_COUNT && i < ideas.length; i++) {
-    html += renderCard(ideas[i], i + 1);
-  }
-
-  var remaining = ideas.length - FREE_COUNT;
-  html += '<div class="lock-wall"><h3>' + remaining + ' More Ideas Ready</h3><a href="https://over50pros.com/upgrade" class="btn-unlock">Unlock Full Report</a></div>';
-  container.innerHTML = html;
+  container.innerHTML = ideas.slice(0, 3).map((idea, i) => `
+    <div class="idea-card">
+      <h3>${i+1}. ${idea.title}</h3>
+      <p>${idea.description}</p>
+      <div style="margin-top:10px;">${(idea.skillsUsed || []).map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+    </div>`).join('') + `<div style="text-align:center;padding:20px;border:2px dashed #ccc;">Unlock 9 more ideas at Over50Pros.com</div>`;
   document.getElementById('results').classList.add('active');
 }
-
-function renderCard(idea, num) {
-  var numStr = num < 10 ? '0' + num : '' + num;
-  var tags = (idea.skillsUsed || []).map(s => `<span class="skill-tag">${s}</span>`).join('');
-  return `<div class="idea-card">
-    <div class="card-top"><div class="card-num">${numStr}</div></div>
-    <h3>${idea.title}</h3>
-    <p class="desc">${idea.description}</p>
-    <div class="card-details">
-      <div class="detail-box"><div class="dl">Potential</div><div class="dv">${idea.earningPotential}</div></div>
-      <div class="detail-box" style="grid-column:1/-1"><div class="dl">Next Step</div><div class="dv">${idea.firstStep}</div></div>
-    </div>
-    <div class="skills-used">${tags}</div>
-  </div>`;
-}
-
 function reset() {
   skills = [];
   renderPills();
-  document.getElementById('generateBtn').disabled = false;
   document.getElementById('inputCard').style.display = 'block';
   document.getElementById('results').classList.remove('active');
-  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
