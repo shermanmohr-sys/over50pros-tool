@@ -1,20 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/generate.mjs",
-      "use": "@vercel/node"
-    }
-    
-  ],
-  "routes": [
-    {
-      "src": "/api/generate",
-      "dest": "/api/generate.mjs"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/api/generate",
+      "destination": "/api/generate.mjs"
     }
   ]
 }
