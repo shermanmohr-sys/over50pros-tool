@@ -5,10 +5,7 @@
       "src": "api/generate.mjs",
       "use": "@vercel/node"
     },
-    {
-      "src": "/(.*)",
-      "use": "@vercel/static"
-    }
+    
   ],
   "routes": [
     {
