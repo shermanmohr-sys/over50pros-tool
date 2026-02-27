@@ -302,19 +302,25 @@ var email = document.getElementById('emailInput').value.trim();
           renderResults(fallback());
         }
       } else {
+       xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4) {
+    document.getElementById('loading').classList.remove('active');
+    if (xhr.status === 200) {
+      try {
+        var responseData = JSON.parse(xhr.responseText);
+        // This line translates Gemini's complex answer into your 12 cards
+        var aiText = responseData.candidates[0].content.parts[0].text;
+        var cleanIdeas = JSON.parse(aiText); 
+        renderResults(cleanIdeas);
+      } catch(e) {
+        console.error("AI Data Error:", e);
         renderResults(fallback());
       }
+    } else {
+      renderResults(fallback());
     }
-  };
-  xhr.send(JSON.stringify({ skills: skills, goal: goal }));
-}
-
-function fallback() {
-  return [
-    { title: 'Workshop Curriculum Consulting', description: 'Help companies design internal training programs using your expertise. Businesses constantly need custom workshops but lack experienced practitioners to structure them.', type: 'Consulting', skillsUsed: skills.slice(0,2), timeToLaunch: '2 weeks', earningPotential: '$1,500-4k/project', firstStep: 'Write a 1-page case study of a training or project you have successfully led.' },
-    { title: 'Skills-Based Online Course', description: 'Package your professional expertise into a self-paced course. Professionals pay premium prices to learn from real-world practitioners with proven track records.', type: 'Course', skillsUsed: skills.slice(0,1), timeToLaunch: '4-6 weeks', earningPotential: '$500-3k/mo', firstStep: 'Outline 5 modules covering the biggest mistakes beginners make in your field.' },
-    { title: 'Weekly Expert Newsletter', description: 'Share practical insights from your career with a growing professional audience. Monetize through sponsorships, a paid tier, or consulting leads.', type: 'Digital Product', skillsUsed: skills.slice(0,2), timeToLaunch: '1 week', earningPotential: '$300-2k/mo', firstStep: 'Publish your first free issue on Substack today and share one hard-won lesson.' }
-  ];
+  }
+};
 }
 
 function renderResults(ideas) {
