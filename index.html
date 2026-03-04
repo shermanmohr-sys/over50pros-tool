@@ -1,96 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Side Project Idea Generator | Over50Pros</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wisdom Engine | Over50Pros</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-/* ... (All your CSS styles from earlier) ... */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--blue:#005A8D;--blue-dark:#004570;--blue-light:#0072b1;--green:#6EBE44;--green-dark:#58a234;--gray:#F4F4F4;--slate:#1E1E1E;--sky:#B3DDEE;--sky-light:#daeef7;--mid:#5a6a75;--border:#d0dde5;--white:#ffffff;--shadow:0 4px 24px rgba(0,90,141,0.10);}
-body{font-family:'Source Sans Pro',sans-serif;background:var(--gray);color:var(--slate);min-height:100vh;}
-.hero{background:var(--blue);padding:56px 24px 48px;text-align:center;position:relative;overflow:hidden;}.hero h1{font-size:clamp(1.9rem,5vw,3.2rem);font-weight:900;color:#fff;line-height:1.15;margin-bottom:16px;}
-.container{max-width:840px;margin:0 auto;padding:0 20px 60px;}
-.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:38px;margin-top:-30px;box-shadow:var(--shadow);}
-.input-row{display:flex;gap:10px;margin-bottom:14px;}
-.input-row input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:13px 16px;}.btn-add{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:13px 22px;font-weight:700;cursor:pointer;}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}.pill{background:var(--sky-light);border:1px solid var(--sky);border-radius:100px;padding:6px 14px;font-size:0.875rem;font-weight:600;color:var(--blue-dark);}
-.btn-generate{width:100%;background:var(--green);color:#fff;border:none;border-radius:10px;padding:18px;font-size:1.1rem;font-weight:700;cursor:pointer;}
-.loading{display:none;text-align:center;padding:60px 24px;}.loading.active{display:block;}
-.results{display:none;}.results.active{display:block;}
-.idea-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:12px;padding:26px 28px;margin-bottom:14px;}
-.skill-tag{background:var(--blue);color:#fff;font-size:0.78rem;font-weight:700;padding:3px 11px;border-radius:100px;margin-right:5px;}
+:root{--blue:#005A8D;--green:#6EBE44;--gray:#F4F4F4;--slate:#1E1E1E;--sky:#B3DDEE;--white:#ffffff;}
+body{font-family:'Source Sans Pro',sans-serif;background:var(--gray);color:var(--slate);margin:0;}
+.hero{background:var(--blue);padding:60px 20px;text-align:center;color:white;border-bottom:5px solid var(--green);}
+.container{max-width:800px;margin:-40px auto 60px;padding:0 20px;}
+.card{background:white;padding:40px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+h1{font-weight:900;margin:0;font-size:2.5rem;} h1 em{color:var(--green);font-style:normal;}
+.input-group{margin-bottom:25px;} label{display:block;font-weight:700;margin-bottom:8px;color:var(--blue);}
+input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;}
+.btn-main{width:100%;background:var(--green);color:white;padding:20px;border:none;border-radius:10px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:0.3s;}
+.btn-main:hover{background:var(--slate);}
+.pill-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.pill{background:var(--sky);padding:6px 15px;border-radius:20px;font-size:0.9rem;font-weight:600;color:var(--blue);}
+#results, #loading{display:none;margin-top:30px;}
+.idea-card{border-left:5px solid var(--blue);padding:20px;background:#f9f9f9;margin-bottom:15px;border-radius:0 10px 10px 0;}
 </style>
 </head>
 <body>
-<div class="hero"><h1>Turn Your Life Skills Into<br><em>Real Side Projects</em></h1></div>
+
+<div class="hero"><h1>Where <em>Experience</em> Meets Opportunity</h1></div>
+
 <div class="container">
-  <div class="card" id="inputCard">
-    <h2>Where should we send your results?</h2>
-    <div class="input-row"><input type="email" id="emailInput" placeholder="yourname@email.com" required></div>
-    <h2>What skills do you have?</h2>
-    <div class="input-row"><input type="text" id="skillInput" placeholder="e.g. Project Management"><button class="btn-add" onclick="addSkill()">+ Add</button></div>
-    <div class="pills" id="pills"></div>
-    <button class="btn-generate" id="generateBtn" onclick="generate()">✦ Generate My 12 Ideas</button>
+  <div class="card" id="mainApp">
+    <div class="input-group">
+      <label>Step 1: Where should we send your results?</label>
+      <input type="email" id="email" placeholder="email@example.com">
+    </div>
+
+    <div class="input-group">
+      <label>Step 2: What is your primary goal?</label>
+      <select id="intent">
+        <option value="Gig Work">Find Profitable Gig Work</option>
+        <option value="Starting a Business">Start a Lifestyle Business</option>
+        <option value="Apply for a Job">Land a New Job (Portfolio Builder)</option>
+        <option value="Build a Project">Build a Personal Project</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Step 3: Enter up to 8 Life/Job Skills (Press Enter)</label>
+      <input type="text" id="skillInput" placeholder="e.g. Leadership, Accounting, Teaching">
+      <div class="pill-container" id="pillContainer"></div>
+    </div>
+
+    <button class="btn-main" onclick="generateWisdom()">✦ Generate My 12 Project Ideas</button>
   </div>
-  <div class="loading" id="loading"><h3>Crafting your ideas...</h3></div>
-  <div class="results" id="results">
-    <h2>Your <span id="ideasCount">0</span> Ideas</h2>
-    <div id="ideasContainer"></div>
-    <button onclick="reset()">↺ Start Over</button>
+
+  <div id="loading" style="text-align:center;"><h2>Consulting the Wisdom Engine...</h2></div>
+
+  <div id="results">
+    <h2 id="resultHeader">Your Top 3 Ideas</h2>
+    <div id="ideasContent"></div>
+    <div style="background:var(--blue); color:white; padding:30px; border-radius:10px; text-align:center; margin-top:20px;">
+      <h3>9 More Ideas & Full Implementation Guide Ready</h3>
+      <p>Unlock your complete 12-idea report for a one-time payment.</p>
+      <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Full Report — $15</button>
+    </div>
   </div>
 </div>
 
 <script>
-var skills = [];
-function addSkill() {
-  var input = document.getElementById('skillInput');
-  var val = input.value.trim();
-  if (!val) return;
-  skills.push(val);
-  input.value = '';
-  renderPills();
-}
+let skills = [];
+const skillInput = document.getElementById('skillInput');
+
+skillInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && skills.length < 8) {
+    skills.push(skillInput.value);
+    skillInput.value = '';
+    renderPills();
+  }
+});
+
 function renderPills() {
-  document.getElementById('pills').innerHTML = skills.map(s => `<div class="pill">${s}</div>`).join('');
+  document.getElementById('pillContainer').innerHTML = skills.map(s => `<div class="pill">${s}</div>`).join('');
 }
-function generate() {
-  var email = document.getElementById('emailInput').value.trim();
-  if (!email || skills.length === 0) { alert('Please enter email and skills.'); return; }
-  document.getElementById('inputCard').style.display = 'none';
-  document.getElementById('loading').classList.add('active');
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/api/generate', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4) {
-      document.getElementById('loading').classList.remove('active');
-      if (xhr.status === 200) {
-        var data = JSON.parse(xhr.responseText);
-        var aiText = data.candidates[0].content.parts[0].text;
-        renderResults(JSON.parse(aiText));
-      }
-    }
-  };
-  xhr.send(JSON.stringify({ email: email, skills: skills }));
+
+async function generateWisdom() {
+  const email = document.getElementById('email').value;
+  const intent = document.getElementById('intent').value;
+  if (!email || skills.length === 0) return alert("Please provide email and skills.");
+
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email, intent, skills })
+  });
+
+  const data = await response.json();
+  displayResults(data.free_ideas);
 }
-function renderResults(ideas) {
-  var container = document.getElementById('ideasContainer');
-  document.getElementById('ideasCount').textContent = ideas.length;
-  container.innerHTML = ideas.slice(0, 3).map((idea, i) => `
+
+function displayResults(ideas) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('ideasContent').innerHTML = (ideas || []).map((idea, i) => `
     <div class="idea-card">
       <h3>${i+1}. ${idea.title}</h3>
       <p>${idea.description}</p>
-      <div style="margin-top:10px;">${(idea.skillsUsed || []).map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
-    </div>`).join('') + `<div style="text-align:center;padding:20px;border:2px dashed #ccc;">Unlock 9 more ideas at Over50Pros.com</div>`;
-  document.getElementById('results').classList.add('active');
-}
-function reset() {
-  skills = [];
-  renderPills();
-  document.getElementById('inputCard').style.display = 'block';
-  document.getElementById('results').classList.remove('active');
+      <small><strong>Skills Used:</strong> ${(idea.skillsUsed || []).join(', ')}</small>
+    </div>
+  `).join('');
 }
 </script>
 </body>
