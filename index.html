@@ -83,31 +83,63 @@ function renderPills() {
 async function generateWisdom() {
   const email = document.getElementById('email').value;
   const intent = document.getElementById('intent').value;
-  if (!email || skills.length === 0) return alert("Please provide email and skills.");
+  const currentVal = skillInput.value.trim();
+  
+  // New: If the user forgot to hit Enter, add whatever is in the box now
+  if (currentVal && !skills.includes(currentVal)) {
+    skills.push(currentVal);
+    renderPills();
+    skillInput.value = '';
+  }
+
+  if (!email || skills.length === 0) return alert("Please provide email and at least one skill.");
 
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
 
-  const response = await fetch('/api/generate', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ email, intent, skills })
-  });
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, intent, skills, userId: '00000000-0000-0000-0000-000000000000' }) // Temporary ID for testing
+    });
 
-  const data = await response.json();
-  displayResults(data.free_ideas);
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    displayResults(data.free_ideas);
+  } catch (err) {
+    alert("Connection error. Check your Vercel logs or environment keys.");
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('loading').style.display = 'none';
+  }
 }
 
 function displayResults(ideas) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('results').style.display = 'block';
-  document.getElementById('ideasContent').innerHTML = (ideas || []).map((idea, i) => `
+  
+  const container = document.getElementById('ideasContent');
+  
+  if (!ideas || ideas.length === 0) {
+    container.innerHTML = "<p style='text-align:center;'>Generating high-quality ideas... please refresh and try again in 10 seconds.</p>";
+    return;
+  }
+
+  container.innerHTML = ideas.map((idea, i) => {
+    // This part handles different naming styles from the AI
+    const projectTitle = idea.title || "Project Idea " + (i + 1);
+    const projectDesc = idea.description || "A custom project tailored to your skills.";
+    const skillList = idea.skillsUsed || idea.skills_used || [];
+
+    return `
     <div class="idea-card">
-      <h3>${i+1}. ${idea.title}</h3>
-      <p>${idea.description}</p>
-      <small><strong>Skills Used:</strong> ${(idea.skillsUsed || []).join(', ')}</small>
-    </div>
-  `).join('');
+      <h3 style="margin-top:0; color:var(--blue);">${i+1}. ${projectTitle}</h3>
+      <p style="line-height:1.5; color:var(--slate);">${projectDesc}</p>
+      <div style="margin-top:10px;">
+        ${skillList.map(s => `<span class="pill" style="font-size:0.75rem; margin-right:5px;">${s}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 </script>
 </body>
