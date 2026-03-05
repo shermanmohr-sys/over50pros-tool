@@ -146,6 +146,7 @@
     }
     
     err.style.display = 'none';
+    resDiv.innerHTML = '';
     resDiv.style.display = 'none';
     loader.style.display = 'block';
     goBtn.disabled = true;
@@ -163,28 +164,32 @@
 
       if (!response.ok) {
         err.style.display = 'block';
-        err.innerText = "Error " + response.status + ":\n" + JSON.stringify(data, null, 2);
+        err.innerText = "Error: " + (data.message || data.error) + 
+                       "\n\nModel Attempted: " + (data.modelUsed || "None") +
+                       "\n\nServer Trace: " + JSON.stringify(data.raw || data.discovered_models || data.debug_list || {}, null, 2);
         return;
       }
 
       resDiv.style.display = 'block';
       resDiv.innerHTML = "<h3>Your Top 3 Opportunities</h3>";
       
-      data.free_ideas.forEach(i => {
-        const item = document.createElement('div');
-        item.className = 'item';
-        item.innerHTML = `<strong>${i.title}</strong>${i.description}`;
-        resDiv.appendChild(item);
-      });
+      if (data.free_ideas && Array.isArray(data.free_ideas)) {
+        data.free_ideas.forEach(i => {
+          const item = document.createElement('div');
+          item.className = 'item';
+          item.innerHTML = `<strong>${i.title}</strong>${i.description}`;
+          resDiv.appendChild(item);
+        });
 
-      const upgrade = document.createElement('div');
-      upgrade.className = 'upgrade-box';
-      upgrade.innerHTML = `
-        <h3>Unlock All 12 Ideas</h3>
-        <p>Your full personalized roadmap is ready.</p>
-        <button style="margin-top:10px;" onclick="window.location.href='https://over50pros.com/upgrade'">Get Full Report — $15</button>
-      `;
-      resDiv.appendChild(upgrade);
+        const upgrade = document.createElement('div');
+        upgrade.className = 'upgrade-box';
+        upgrade.innerHTML = `
+          <h3>Unlock All 12 Ideas</h3>
+          <p>Your full personalized roadmap is ready.</p>
+          <button style="margin-top:10px; background:#6EBE44;" onclick="window.location.href='https://over50pros.com/upgrade'">Get Full Report — $15</button>
+        `;
+        resDiv.appendChild(upgrade);
+      }
 
     } catch (e) {
       loader.style.display = 'none';
