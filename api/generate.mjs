@@ -1,13 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  const { skills, intent } = req.body;
+  const { skills, intent, email } = req.body;
   const API_KEY = process.env.GEMINI_API_KEY;
   const SB_URL = process.env.SUPABASE_URL;
   const SB_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!API_KEY || !SB_URL || !SB_KEY) {
-    return res.status(500).json({ error: "Config Error", message: "Environment keys are missing in Vercel." });
+    return res.status(500).json({ error: "Config Error", message: "Environment keys are missing." });
   }
 
   const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -18,44 +18,38 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ 
-          parts: [{ text: `You are a high-level consultant for professionals over 50. 
-          Generate 12 creative, high-income project or business ideas.
-          
-          Skills: ${Array.isArray(skills) ? skills.join(', ') : skills}
-          Goal: ${intent}
-          
-          FORMAT: Return ONLY a valid JSON array of objects. 
-          Each object must have "title", "description", and "skillsUsed" (array).
-          Do not include any conversational text or markdown code blocks.` }] 
+          parts: [{ text: `JSON ONLY. Generate 12 career ideas for skills: ${skills}. Goal: ${intent}. Schema: [{"title": "string", "description": "string", "skillsUsed": ["string"]}]` }] 
         }]
       })
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
-    if (data.error) {
-      throw new Error(`AI Provider Error: ${data.error.message}`);
+    if (!response.ok) {
+      return res.status(response.status).json({ 
+        error: "Google_API_Rejected", 
+        raw: result.error || result 
+      });
     }
 
-    let aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!aiText) {
-      throw new Error("The AI returned an empty response. Check safety filters.");
+    if (!result.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return res.status(500).json({ error: "Empty_Response", raw: result });
     }
 
-    aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
-    
-    const cleanIdeas = JSON.parse(aiText);
+    let text = result.candidates[0].content.parts[0].text;
+    const cleanJson = JSON.parse(text.replace(/```json|```/g, "").trim());
 
     const supabase = createClient(SB_URL, SB_KEY);
     supabase.from('saved_projects').insert([{
       skills_input: skills,
       intent: intent,
-      additional_ideas: cleanIdeas
-    }]).catch(e => console.error("BRIDGE: DB Error:", e));
+      additional_ideas: cleanJson,
+      email: email
+    }]).catch(() => {});
 
-    return res.status(200).json({ free_ideas: Array.isArray(cleanIdeas) ? cleanIdeas.slice(0, 3) : [] });
+    return res.status(200).json({ free_ideas: cleanJson.slice(0, 3) });
 
-  } catch (error) {
-    return res.status(500).json({ error: "Server Error", message: error.message });
+  } catch (err) {
+    return res.status(500).json({ error: "Bridge_Crash", message: err.message });
   }
 }
