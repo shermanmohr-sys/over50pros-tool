@@ -1,115 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wisdom Engine | Over50Pros</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Over50Pros | Wisdom Engine</title>
 <style>
-:root{--blue:#005A8D;--green:#6EBE44;--gray:#F4F4F4;--slate:#1E1E1E;--sky:#B3DDEE;--white:#ffffff;}
-body{font-family:'Source Sans Pro',sans-serif;background:var(--gray);color:var(--slate);margin:0;}
-.hero{background:var(--blue);padding:60px 20px;text-align:center;color:white;border-bottom:5px solid var(--green);}
-.container{max-width:800px;margin:-40px auto 60px;padding:0 20px;}
-.card{background:white;padding:40px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
-h1{font-weight:900;margin:0;font-size:2.5rem;} h1 em{color:var(--green);font-style:normal;}
-.input-group{margin-bottom:25px;} label{display:block;font-weight:700;margin-bottom:8px;color:var(--blue);}
-input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;}
-.btn-main{width:100%;background:var(--green);color:white;padding:20px;border:none;border-radius:10px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:0.3s;}
-.btn-main:hover{background:var(--slate); transform: scale(1.02);}
-.pill-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-.pill{background:var(--sky);padding:6px 15px;border-radius:20px;font-size:0.9rem;font-weight:600;color:var(--blue);}
-#results, #loading, #errorBox{display:none;margin-top:30px;}
-.idea-card{border-left:5px solid var(--blue);padding:20px;background:#f9f9f9;margin-bottom:15px;border-radius:0 10px 10px 0;}
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    background: #f4f4f4; 
+    padding: 20px; 
+    line-height: 1.6; 
+    color: #333;
+  }
+  .card { 
+    max-width: 600px; 
+    margin: 40px auto; 
+    background: white; 
+    padding: 40px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+  }
+  h2 { 
+    color: #005A8D; 
+    margin-top: 0; 
+    font-weight: 800; 
+    text-align: center; 
+  }
+  label { 
+    display: block; 
+    margin-top: 15px; 
+    font-weight: 600; 
+    color: #555; 
+  }
+  input, select, button { 
+    width: 100%; 
+    padding: 14px; 
+    margin: 8px 0; 
+    border: 1px solid #ddd; 
+    border-radius: 6px; 
+    font-size: 16px; 
+    box-sizing: border-box; 
+  }
+  button { 
+    background: #6EBE44; 
+    color: white; 
+    font-weight: 700; 
+    cursor: pointer; 
+    border: none; 
+    transition: 0.2s; 
+    margin-top: 20px; 
+  }
+  button:hover { 
+    background: #5da339; 
+  }
+  button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  .error { 
+    color: #b00; 
+    background: #fee; 
+    padding: 15px; 
+    border-radius: 6px; 
+    margin-top: 25px; 
+    font-family: monospace; 
+    font-size: 12px; 
+    display: none; 
+    white-space: pre-wrap; 
+    border: 1px solid #fcc; 
+  }
+  .results { 
+    margin-top: 30px; 
+    display: none; 
+  }
+  .item { 
+    border-left: 5px solid #005A8D; 
+    padding: 20px; 
+    margin-bottom: 15px; 
+    background: #f9f9f9; 
+    border-radius: 0 8px 8px 0; 
+  }
+  .item strong { 
+    color: #005A8D; 
+    font-size: 18px; 
+    display: block; 
+    margin-bottom: 5px; 
+  }
+  #loader { 
+    text-align: center; 
+    margin-top: 20px; 
+    color: #666; 
+    font-style: italic; 
+    display: none; 
+  }
+  .upgrade-box {
+    background: #005A8D;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .upgrade-box h3 { margin-top: 0; }
 </style>
 </head>
 <body>
-
-<div class="hero"><h1>Where <em>Experience</em> Meets Opportunity</h1></div>
-
-<div class="container">
-  <div class="card" id="mainApp">
-    <div class="input-group"><label>Email</label><input type="email" id="email" placeholder="email@example.com"></div>
-    <div class="input-group"><label>What is your goal?</label>
-      <select id="intent">
-        <option value="Gig Work">Find Profitable Gig Work</option>
-        <option value="Starting a Business">Start a Lifestyle Business</option>
-        <option value="Apply for a Job">Land a New Job</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <label>Enter Skills (Press Enter after each)</label>
-      <input type="text" id="skillInput" placeholder="e.g. Sales, Management">
-      <div class="pill-container" id="pillContainer"></div>
-    </div>
-    <button class="btn-main" onclick="generateWisdom()">✦ Generate Project Ideas</button>
+  <div class="card">
+    <h2>Wisdom Engine</h2>
+    
+    <label for="email">Email Address</label>
+    <input type="email" id="email" placeholder="you@example.com">
+    
+    <label for="intent">What is your primary goal?</label>
+    <select id="intent">
+      <option value="Gig Work">Find Profitable Gig Work</option>
+      <option value="Lifestyle Business">Start a Lifestyle Business</option>
+      <option value="Career Pivot">Pivot to a New Career</option>
+    </select>
+    
+    <label for="skills">Enter Skills (comma separated)</label>
+    <input type="text" id="skills" placeholder="e.g. Project Management, Sales, Mentoring">
+    
+    <button id="go">Generate 12 Custom Ideas</button>
+    
+    <div id="loader">Consulting the AI Engine...</div>
+    <div id="err" class="error"></div>
+    
+    <div id="res" class="results"></div>
   </div>
-
-  <div id="loading" style="text-align:center; padding:40px;">
-    <h2 style="color:var(--blue);">Consulting the Wisdom Engine...</h2>
-    <p>Connecting to the production AI engine. This may take a moment.</p>
-  </div>
-
-  <div id="errorBox" style="background:#fff1f1; padding:20px; border-radius:10px; text-align:center; border: 1px solid red;">
-    <h3 style="color:red; margin-top:0;">Connection Refined</h3>
-    <p id="errorMsg"></p>
-    <button class="btn-main" style="background:var(--blue);" onclick="location.reload()">Retry Now</button>
-  </div>
-
-  <div id="results">
-    <h2 style="color:var(--blue);">Your Tailored Opportunities</h2>
-    <div id="ideasContent"></div>
-    <div style="background:var(--blue); color:white; padding:30px; border-radius:15px; text-align:center; margin-top:30px;">
-      <h3>Unlock Your Full 12-Idea Report</h3>
-      <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Everything — $15</button>
-    </div>
-  </div>
-</div>
 
 <script>
-let skills = [];
-const skillInput = document.getElementById('skillInput');
-skillInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); addSkill(); } });
-function addSkill() {
-  const val = skillInput.value.trim();
-  if (val && !skills.includes(val)) { skills.push(val); skillInput.value = ''; renderPills(); }
-}
-function renderPills() { document.getElementById('pillContainer').innerHTML = skills.map(s => `<div class="pill">${s}</div>`).join(''); }
+  document.getElementById('go').onclick = async () => {
+    const err = document.getElementById('err');
+    const resDiv = document.getElementById('res');
+    const loader = document.getElementById('loader');
+    const goBtn = document.getElementById('go');
+    
+    const email = document.getElementById('email').value.trim();
+    const skills = document.getElementById('skills').value.trim();
+    const intent = document.getElementById('intent').value;
 
-async function generateWisdom() {
-  if (skillInput.value.trim()) addSkill();
-  const email = document.getElementById('email').value;
-  const intent = document.getElementById('intent').value;
-  if (!email || skills.length === 0) return alert("Please enter email and skills.");
+    if (!email || !skills) {
+      alert("Please enter both your email and your skills.");
+      return;
+    }
+    
+    err.style.display = 'none';
+    resDiv.style.display = 'none';
+    loader.style.display = 'block';
+    goBtn.disabled = true;
 
-  document.getElementById('mainApp').style.display = 'none';
-  document.getElementById('loading').style.display = 'block';
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, intent, skills })
+      });
 
-  try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, intent, skills })
-    });
-    const data = await response.json();
-    if (data.error) throw new Error(data.message || data.error);
-    displayResults(data.free_ideas);
-  } catch (err) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('errorBox').style.display = 'block';
-    document.getElementById('errorMsg').innerText = err.message;
-  }
-}
+      const data = await response.json();
+      loader.style.display = 'none';
+      goBtn.disabled = false;
 
-function displayResults(ideas) {
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('results').style.display = 'block';
-  document.getElementById('ideasContent').innerHTML = (ideas || []).map((idea, i) => `
-    <div class="idea-card">
-      <h3 style="margin:0; color:var(--blue);">${i+1}. ${idea.title}</h3>
-      <p style="margin:10px 0;">${idea.description}</p>
-      <small><strong>Skills Used:</strong> ${(idea.skillsUsed || []).join(', ')}</small>
-    </div>
-  `).join('');
-}
+      if (!response.ok) {
+        err.style.display = 'block';
+        err.innerText = "Error " + response.status + ":\n" + JSON.stringify(data, null, 2);
+        return;
+      }
+
+      resDiv.style.display = 'block';
+      resDiv.innerHTML = "<h3>Your Top 3 Opportunities</h3>";
+      
+      data.free_ideas.forEach(i => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `<strong>${i.title}</strong>${i.description}`;
+        resDiv.appendChild(item);
+      });
+
+      const upgrade = document.createElement('div');
+      upgrade.className = 'upgrade-box';
+      upgrade.innerHTML = `
+        <h3>Unlock All 12 Ideas</h3>
+        <p>Your full personalized roadmap is ready.</p>
+        <button style="margin-top:10px;" onclick="window.location.href='https://over50pros.com/upgrade'">Get Full Report — $15</button>
+      `;
+      resDiv.appendChild(upgrade);
+
+    } catch (e) {
+      loader.style.display = 'none';
+      goBtn.disabled = false;
+      err.style.display = 'block';
+      err.innerText = "Network/Fetch Error: " + e.message;
+    }
+  };
 </script>
 </body>
 </html>
