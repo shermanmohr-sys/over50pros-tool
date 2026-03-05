@@ -8,13 +8,34 @@ export default async function handler(req, res) {
 
   if (!API_KEY) return res.status(500).json({ error: "Missing GEMINI_API_KEY" });
 
-  // 1. HARD-CODED MODEL MATCH
-  // Based on your trace, these are the confirmed top-tier models available to you:
   const targetModel = "models/gemini-2.0-flash"; 
   const url = `https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${API_KEY}`;
 
+  // Senior Dev Helper: Exponential Backoff for Rate Limits (429 errors)
+  const fetchWithRetry = async (url, options, retries = 3, backoff = 2000) => {
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      // If we hit a rate limit (429), wait and try again
+      if (response.status === 429 && retries > 0) {
+        console.log(`Rate limit hit. Retrying in ${backoff}ms...`);
+        await new Promise(resolve => setTimeout(resolve, backoff));
+        return fetchWithRetry(url, options, retries - 1, backoff * 2);
+      }
+
+      return { response, result };
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, backoff));
+        return fetchWithRetry(url, options, retries - 1, backoff * 2);
+      }
+      throw err;
+    }
+  };
+
   try {
-    const response = await fetch(url, {
+    const { response, result } = await fetchWithRetry(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -29,19 +50,20 @@ export default async function handler(req, res) {
       })
     });
 
-    const result = await response.json();
-
     if (!response.ok) {
-      return res.status(response.status).json({ error: "API_Rejected", raw: result, modelUsed: targetModel });
+      return res.status(response.status).json({ 
+        error: "API_Rejected", 
+        message: result.error?.message || "Google API Error",
+        raw: result, 
+        modelUsed: targetModel 
+      });
     }
 
     const text = result.candidates[0].content.parts[0].text;
     const cleanJson = JSON.parse(text);
 
-    // 2. FIXED SUPABASE SYNTAX
     if (SB_URL && SB_KEY) {
       const supabase = createClient(SB_URL, SB_KEY);
-      // We don't 'await' this to keep the response fast for the user
       supabase.from('saved_projects').insert([{
         skills_input: skills,
         intent: intent,
