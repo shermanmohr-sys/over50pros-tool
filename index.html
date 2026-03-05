@@ -14,10 +14,10 @@ h1{font-weight:900;margin:0;font-size:2.5rem;} h1 em{color:var(--green);font-sty
 .input-group{margin-bottom:25px;} label{display:block;font-weight:700;margin-bottom:8px;color:var(--blue);}
 input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;}
 .btn-main{width:100%;background:var(--green);color:white;padding:20px;border:none;border-radius:10px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:0.3s;}
-.btn-main:hover{background:var(--slate);}
+.btn-main:hover{background:var(--slate); transform: scale(1.02);}
 .pill-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 .pill{background:var(--sky);padding:6px 15px;border-radius:20px;font-size:0.9rem;font-weight:600;color:var(--blue);}
-#results, #loading{display:none;margin-top:30px;}
+#results, #loading, #errorBox{display:none;margin-top:30px;}
 .idea-card{border-left:5px solid var(--blue);padding:20px;background:#f9f9f9;margin-bottom:15px;border-radius:0 10px 10px 0;}
 </style>
 </head>
@@ -28,38 +28,46 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
 <div class="container">
   <div class="card" id="mainApp">
     <div class="input-group">
-      <label>Step 1: Where should we send your results?</label>
+      <label>Step 1: Your Email</label>
       <input type="email" id="email" placeholder="email@example.com">
     </div>
 
     <div class="input-group">
-      <label>Step 2: What is your primary goal?</label>
+      <label>Step 2: What is your goal?</label>
       <select id="intent">
         <option value="Gig Work">Find Profitable Gig Work</option>
         <option value="Starting a Business">Start a Lifestyle Business</option>
-        <option value="Apply for a Job">Land a New Job (Portfolio Builder)</option>
-        <option value="Build a Project">Build a Personal Project</option>
+        <option value="Apply for a Job">Land a New Job</option>
       </select>
     </div>
 
     <div class="input-group">
-      <label>Step 3: Enter up to 8 Life/Job Skills (Press Enter)</label>
-      <input type="text" id="skillInput" placeholder="e.g. Leadership, Accounting, Teaching">
+      <label>Step 3: Enter Life/Job Skills (Press Enter after each)</label>
+      <input type="text" id="skillInput" placeholder="e.g. Sales, Management, Design">
       <div class="pill-container" id="pillContainer"></div>
     </div>
 
     <button class="btn-main" onclick="generateWisdom()">✦ Generate My 12 Project Ideas</button>
   </div>
 
-  <div id="loading" style="text-align:center;"><h2>Consulting the Wisdom Engine...</h2></div>
+  <div id="loading" style="text-align:center; padding: 40px;">
+    <h2 style="color:var(--blue);">Consulting the Wisdom Engine...</h2>
+    <p>Please wait while we analyze market gaps for your specific skillset.</p>
+  </div>
+
+  <div id="errorBox" style="background:#fff1f1; padding:20px; border-radius:10px; text-align:center; border: 1px solid red;">
+    <h3 style="color:red; margin-top:0;">Engine Refresh Required</h3>
+    <p id="errorMsg">The AI is momentarily warming up. Please wait 10 seconds and try again.</p>
+    <button class="btn-main" style="background:var(--blue);" onclick="location.reload()">Retry</button>
+  </div>
 
   <div id="results">
-    <h2 id="resultHeader">Your Top 3 Ideas</h2>
+    <h2 style="color:var(--blue); margin-bottom: 20px;">Top 3 Tailored Projects</h2>
     <div id="ideasContent"></div>
-    <div style="background:var(--blue); color:white; padding:30px; border-radius:10px; text-align:center; margin-top:20px;">
-      <h3>9 More Ideas & Full Implementation Guide Ready</h3>
-      <p>Unlock your complete 12-idea report for a one-time payment.</p>
-      <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Full Report — $15</button>
+    <div style="background:var(--blue); color:white; padding:30px; border-radius:15px; text-align:center; margin-top:30px;">
+      <h3>Unlock Your Full 12-Idea Report</h3>
+      <p>Get the complete guide including implementation steps and market analysis.</p>
+      <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Everything — $15</button>
     </div>
   </div>
 </div>
@@ -69,10 +77,14 @@ let skills = [];
 const skillInput = document.getElementById('skillInput');
 
 skillInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && skills.length < 8) {
-    skills.push(skillInput.value);
-    skillInput.value = '';
-    renderPills();
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = skillInput.value.trim();
+    if (val && !skills.includes(val)) {
+      skills.push(val);
+      skillInput.value = '';
+      renderPills();
+    }
   }
 });
 
@@ -81,18 +93,15 @@ function renderPills() {
 }
 
 async function generateWisdom() {
-  const email = document.getElementById('email').value;
-  const intent = document.getElementById('intent').value;
-  const currentVal = skillInput.value.trim();
-  
-  // New: If the user forgot to hit Enter, add whatever is in the box now
-  if (currentVal && !skills.includes(currentVal)) {
-    skills.push(currentVal);
-    renderPills();
-    skillInput.value = '';
+  if (skillInput.value.trim()) {
+    const lastVal = skillInput.value.trim();
+    if (!skills.includes(lastVal)) skills.push(lastVal);
   }
 
-  if (!email || skills.length === 0) return alert("Please provide email and at least one skill.");
+  const email = document.getElementById('email').value;
+  const intent = document.getElementById('intent').value;
+  
+  if (!email || skills.length === 0) return alert("Please enter email and skills.");
 
   document.getElementById('mainApp').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
@@ -101,45 +110,32 @@ async function generateWisdom() {
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ email, intent, skills, userId: '00000000-0000-0000-0000-000000000000' }) // Temporary ID for testing
+      body: JSON.stringify({ email, intent, skills })
     });
 
     const data = await response.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) throw new Error(data.message || data.error);
+
     displayResults(data.free_ideas);
   } catch (err) {
-    alert("Connection error. Check your Vercel logs or environment keys.");
-    document.getElementById('mainApp').style.display = 'block';
     document.getElementById('loading').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'block';
+    document.getElementById('errorMsg').innerText = "The server is currently connecting. This is normal for a new setup. Please wait 10 seconds and try again.";
   }
 }
 
 function displayResults(ideas) {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('results').style.display = 'block';
-  
-  const container = document.getElementById('ideasContent');
-  
-  if (!ideas || ideas.length === 0) {
-    container.innerHTML = "<p style='text-align:center;'>Generating high-quality ideas... please refresh and try again in 10 seconds.</p>";
-    return;
-  }
-
-  container.innerHTML = ideas.map((idea, i) => {
-    // This part handles different naming styles from the AI
-    const projectTitle = idea.title || "Project Idea " + (i + 1);
-    const projectDesc = idea.description || "A custom project tailored to your skills.";
-    const skillList = idea.skillsUsed || idea.skills_used || [];
-
-    return `
+  document.getElementById('ideasContent').innerHTML = (ideas || []).map((idea, i) => `
     <div class="idea-card">
-      <h3 style="margin-top:0; color:var(--blue);">${i+1}. ${projectTitle}</h3>
-      <p style="line-height:1.5; color:var(--slate);">${projectDesc}</p>
-      <div style="margin-top:10px;">
-        ${skillList.map(s => `<span class="pill" style="font-size:0.75rem; margin-right:5px;">${s}</span>`).join('')}
+      <h3 style="margin:0; color:var(--blue);">${i+1}. ${idea.title}</h3>
+      <p style="margin: 10px 0;">${idea.description}</p>
+      <div style="font-size:0.85rem; color:var(--blue); font-weight:600;">
+        Skills: ${(idea.skillsUsed || []).join(' • ')}
       </div>
-    </div>`;
-  }).join('');
+    </div>
+  `).join('');
 }
 </script>
 </body>
