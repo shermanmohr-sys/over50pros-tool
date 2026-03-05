@@ -17,9 +17,9 @@ export default async function handler(req, res) {
 
   try {
     // Log 2: Call the AI
-    // Using the /v1/ production endpoint and stable model string
-    console.log("Requesting ideas from Gemini AI...");
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+    // FIX 1: Using v1beta to match specific API key permissions/project setup
+    console.log("Requesting ideas from Gemini AI (v1beta)...");
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
     let aiText = data.candidates[0].content.parts[0].text;
     
-    // THE SCRUBBER: Removes AI formatting (like \`\`\`json) that causes crashes
+    // FIX 2: THE SCRUBBER - Removes AI formatting (like \`\`\`json) that causes JSON.parse to fail
     aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
     
     // Log 3: Parse the AI's answer
