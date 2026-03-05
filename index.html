@@ -28,7 +28,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
 <div class="container">
   <div class="card" id="mainApp">
     <div class="input-group">
-      <label>Step 1: Your Email</label>
+      <label>Step 1: Your Email (To receive your full 12-idea report)</label>
       <input type="email" id="email" placeholder="email@example.com">
     </div>
 
@@ -43,7 +43,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
 
     <div class="input-group">
       <label>Step 3: Enter Life/Job Skills (Press Enter after each)</label>
-      <input type="text" id="skillInput" placeholder="e.g. Leadership, Sales, Writing">
+      <input type="text" id="skillInput" placeholder="e.g. Sales, Management, Mentoring">
       <div class="pill-container" id="pillContainer"></div>
     </div>
 
@@ -52,21 +52,21 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
 
   <div id="loading" style="text-align:center; padding: 40px;">
     <h2 style="color:var(--blue);">Consulting the Wisdom Engine...</h2>
-    <p>Please wait while we analyze market gaps for your specific skillset.</p>
+    <p>Please wait while we cross-reference your expertise with market opportunities.</p>
   </div>
 
   <div id="errorBox" style="background:#fff1f1; padding:20px; border-radius:10px; text-align:center; border: 1px solid red;">
     <h3 style="color:red; margin-top:0;">Engine Refresh Required</h3>
-    <p id="errorMsg">The AI is momentarily warming up. Please wait 10 seconds and try again.</p>
+    <p id="errorMsg">The connection is currently resetting. Please wait 10 seconds and try again.</p>
     <button class="btn-main" style="background:var(--blue);" onclick="location.reload()">Retry Now</button>
   </div>
 
   <div id="results">
-    <h2 style="color:var(--blue); margin-bottom: 20px;">Top 3 Tailored Projects</h2>
+    <h2 style="color:var(--blue); margin-bottom: 20px;">Top 3 Project Opportunities</h2>
     <div id="ideasContent"></div>
     <div style="background:var(--blue); color:white; padding:30px; border-radius:15px; text-align:center; margin-top:30px;">
-      <h3>Unlock Your Full 12-Idea Report</h3>
-      <p>Get the complete roadmap and implementation guide for your career shift.</p>
+      <h3>Unlock Your Full 12-Idea Roadmap</h3>
+      <p>Get the complete personalized report and implementation guide.</p>
       <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Everything — $15</button>
     </div>
   </div>
@@ -120,7 +120,7 @@ async function generateWisdom() {
   } catch (err) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('errorBox').style.display = 'block';
-    document.getElementById('errorMsg').innerText = "The server is currently connecting. This is normal for a first-time launch. Please wait 10 seconds and try again.";
+    document.getElementById('errorMsg').innerText = "The server is currently connecting. This is normal during first-time configuration. Please wait 10 seconds and try again.";
   }
 }
 
@@ -130,7 +130,7 @@ function displayResults(ideas) {
   document.getElementById('ideasContent').innerHTML = (ideas || []).map((idea, i) => `
     <div class="idea-card">
       <h3 style="margin:0; color:var(--blue);">${i+1}. ${idea.title}</h3>
-      <p style="margin: 10px 0;">${idea.description}</p>
+      <p style="margin: 10px 0; line-height: 1.5;">${idea.description}</p>
       <div style="font-size:0.85rem; color:var(--blue); font-weight:600;">
         Skills: ${(idea.skillsUsed || []).join(' • ')}
       </div>
