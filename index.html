@@ -33,7 +33,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
     </div>
 
     <div class="input-group">
-      <label>Step 2: What is your goal?</label>
+      <label>Step 2: What is your primary goal?</label>
       <select id="intent">
         <option value="Gig Work">Find Profitable Gig Work</option>
         <option value="Starting a Business">Start a Lifestyle Business</option>
@@ -43,7 +43,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
 
     <div class="input-group">
       <label>Step 3: Enter Life/Job Skills (Press Enter after each)</label>
-      <input type="text" id="skillInput" placeholder="e.g. Sales, Management, Design">
+      <input type="text" id="skillInput" placeholder="e.g. Leadership, Sales, Writing">
       <div class="pill-container" id="pillContainer"></div>
     </div>
 
@@ -58,7 +58,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
   <div id="errorBox" style="background:#fff1f1; padding:20px; border-radius:10px; text-align:center; border: 1px solid red;">
     <h3 style="color:red; margin-top:0;">Engine Refresh Required</h3>
     <p id="errorMsg">The AI is momentarily warming up. Please wait 10 seconds and try again.</p>
-    <button class="btn-main" style="background:var(--blue);" onclick="location.reload()">Retry</button>
+    <button class="btn-main" style="background:var(--blue);" onclick="location.reload()">Retry Now</button>
   </div>
 
   <div id="results">
@@ -66,7 +66,7 @@ input, select{width:100%;padding:15px;border:2px solid #ddd;border-radius:8px;fo
     <div id="ideasContent"></div>
     <div style="background:var(--blue); color:white; padding:30px; border-radius:15px; text-align:center; margin-top:30px;">
       <h3>Unlock Your Full 12-Idea Report</h3>
-      <p>Get the complete guide including implementation steps and market analysis.</p>
+      <p>Get the complete roadmap and implementation guide for your career shift.</p>
       <button class="btn-main" onclick="window.location.href='https://over50pros.com/upgrade'">Unlock Everything — $15</button>
     </div>
   </div>
@@ -120,7 +120,7 @@ async function generateWisdom() {
   } catch (err) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('errorBox').style.display = 'block';
-    document.getElementById('errorMsg').innerText = "The server is currently connecting. This is normal for a new setup. Please wait 10 seconds and try again.";
+    document.getElementById('errorMsg').innerText = "The server is currently connecting. This is normal for a first-time launch. Please wait 10 seconds and try again.";
   }
 }
 
